@@ -16,3 +16,28 @@ def distance(x1, y1, x2, y2):
 assert distance(1, 2, 1, 2) == 0 
 assert distance(1, 2, 4, 6) == 5
 assert distance (0, 0, 1, 1 ) == 2**0.5
+
+# --------- Testing Classes ------------------
+# To test whether the class constructor (the __init__) method is working correctly, create an instance and then make tests to see whether its instance variables are set correctly. Note that this is a side effect test: the constructor method’s job is to set instance variables, which is a side effect. Its return value doesn’t matter.
+
+class Point:
+  '''move x, y coordinates'''
+
+  def __init__(self, initX, initY):
+    self.x = initX
+    self.y = initY 
+
+  def distanceFromOrigin(self):
+    return ((self.x **2) + (self.y **2 ) ** 0.5)
+
+  def move(self, dx, dy):
+    self.x = self.x + dx 
+    self.y = self.y + dy 
+
+# testing the class constructor 
+p = Point(3, 4)
+assert p.y == 4
+assert p.x == 3 
+
+# testing the distance method 
+https://repl.it/@fergmack/py3-w3-testing#main.py
