@@ -1,3 +1,17 @@
+# Similar to if, else. Not that smomekey is 'some key'
+if somekey in d:
+    # it's there; extract the data
+    extract_data(d)
+else:
+    skip_this_one(d)
+    
+# Can use try, except if there is a lot of potential missing keys     
+try:
+    extract_data(d)
+except KeyError:
+    skip_this_one(d)  
+    
+
 # How many lines will print out when the following code is executed?
 try:
   for i in range(5):
