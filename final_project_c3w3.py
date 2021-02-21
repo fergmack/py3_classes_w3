@@ -1,5 +1,3 @@
-
-
 # ------------ Part 1
 import time 
 
@@ -56,7 +54,7 @@ def getNumberBetween(prompt, min, max):
       if n < min:
         errmessage = 'Must be at least {}'.format(min)
       elif n > max:
-        errrmessage = 'Must be less than {}'.format(max)
+        errmessage = 'Must be less than {}'.format(max)
       else:
         return n
     except ValueError: # the user didn't enter a number
@@ -65,5 +63,34 @@ def getNumberBetween(prompt, min, max):
     # If we haven't gotten a number yet, add the eorror message and ask again
     userinp = input('{}\n{}'.format(errmessage, prompt))
 
-getNumberBetween('Enter number between 1 and 10', 1, 10)
+# getNumberBetween('Enter number between 1 and 10: ', 1, 10)
 
+# ---------------------------------------
+# Spins the wheel of fortune wheel to give a random prize
+# Examples:
+#    { "type": "cash", "text": "$950", "value": 950, "prize": "A trip to Ann Arbor!" },
+#    { "type": "bankrupt", "text": "Bankrupt", "prize": false },
+#    { "type": "loseturn", "text": "Lose a turn", "prize": false }
+# prizes
+wheel_json = [
+  {'type': 'cash', 
+  'text': '$950', 
+  'value': 950, 
+  'prize': 'A trip to Ann Arbor!'}, 
+  {'type': 'bankrupt', 'text': 'Bankrupt', 'prize': False}, {'type': 'loseturn', 'text': 'Lose a turn', 'prize': False}, {'type': 'cash', 'text': '$2500', 'value': 2500, 'prize': False}, {'type': 'cash', 'text': '$900', 'value': 900, 'prize': False}, {'type': 'cash', 'text': '$700', 'value': 700, 'prize': False}, {'type': 'cash', 'text': '$600', 'value': 600, 'prize': False}, {'type': 'cash', 'text': '$800', 'value': 800, 'prize': False}, {'type': 'cash', 'text': 'One Million', 'value': 1000000, 'prize': False}, {'type': 'cash', 'text': '$650', 'value': 650, 'prize': 'A brand new car!'}, {'type': 'cash', 'text': '900', 'value': 900, 'prize': False}, {'type': 'cash', 'text': '$700', 'value': 700, 'prize': False}, {'type': 'cash', 'text': '$600', 'value': 600, 'prize': False}]
+
+def spinWheel():
+  with open(wheel_json, 'r') as f:
+    wheel = json.loads(f.read())
+    return random.choice(wheel)
+
+# Returns a category & phrase (as a tuple) to guess
+# Example:
+#     ("Artist & Song", "Whitney Houston's I Will Always Love You")
+def getRandomCategoryAndPhrase():
+  with open('phrases.json', 'r') as f:
+    phrases = json.loads(f.read())
+
+    category = random.choice(list(phrases.keys()))
+    phrase = random.choice(phrases[category])
+    return (category, phrase.upper)
