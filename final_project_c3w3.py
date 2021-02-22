@@ -94,3 +94,47 @@ def getRandomCategoryAndPhrase():
     category = random.choice(list(phrases.keys()))
     phrase = random.choice(phrases[category])
     return (category, phrase.upper)
+
+# Given a phrase and a list of guessed letters, returns an obscured version
+# Example:
+#     guessed: ['L', 'B', 'E', 'R', 'N', 'P', 'K', 'X', 'Z']
+#     phrase:  "GLACIER NATIONAL PARK"
+#     returns> "_L___ER N____N_L P_RK"
+
+def obscurePhrase(phrase, guessed): 
+  rv = '' 
+  for s in phrase:
+    if (s in LETTERS) and (s not in guessed):
+      rv = rv + '_'
+    else:
+      rv = rv+s 
+  return rv 
+
+# Returns a string representing the current state of the game
+def showBoard(category, obscuredPhrase, guessed):
+  return """
+  Category: {}
+  Phrase:   {}
+  Guessed:  {}
+  """.format(category, obscuredPhrase, ', '.join(sorted(guessed)))
+
+category, phrase = getRandomCategoryAndPhrase()
+guessed = []
+for x in range(random.randint(10, 20)):
+  randomLetter = random.choice(LETTERS)
+  if randomLetter not in guessed:
+    guessed.append(randomLetter)
+
+# Game logic code
+print('=' * 15)
+print('WHEEL OF PYTHON')
+print('=' * 15)
+
+num_human = getNumberBetween('How many human players? ', 0, 10)
+
+# Create the human player instances
+
+# toDo *************
+# human_players = [ WOFHumanPlayer(input('Enter the name for human player #{}'.format(i+1))) for i in range(num_human) ]
+
+# ******** ToDo: NOTE TASK IT TO WRITE THE CLASS WOFHumanPlayer
