@@ -1,5 +1,5 @@
 # ------------ Part 1
-import time 
+import time
 
 # for x in range(2, 6):
 #   print('Sleep {} seconds..'.format(x))
@@ -10,7 +10,7 @@ import time
 # -------------- Part 2
 # random.randint(min, max) generates a random number between min and max (inclusive)
 # random.choice(L) selects a random item from the list L
-import random 
+import random
 
 rand_number = random.randint(1, 10)
 print('Random number between 1 and 10: {}'.format(rand_number))
@@ -39,29 +39,31 @@ print(s.count('python'))
 
 # * obscurePhrase(phrase, guessed) returns a tuple with a random category and phrase for players to guess
 
-import json 
+import json
 import random
 import time
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
+
 # Repeatedly asks the user for a number between min & max (inclusive)
 def getNumberBetween(prompt, min, max):
-  userinp = input(prompt) # ask the first time
-  while True:
-    try:
-      n = int(userinp) # try casting to an integer
-      if n < min:
-        errmessage = 'Must be at least {}'.format(min)
-      elif n > max:
-        errmessage = 'Must be less than {}'.format(max)
-      else:
-        return n
-    except ValueError: # the user didn't enter a number
-      errmessage = '{} is not a number.'.format(userinp)
+    userinp = input(prompt)  # ask the first time
+    while True:
+        try:
+            n = int(userinp)  # try casting to an integer
+            if n < min:
+                errmessage = 'Must be at least {}'.format(min)
+            elif n > max:
+                errmessage = 'Must be less than {}'.format(max)
+            else:
+                return n
+        except ValueError:  # the user didn't enter a number
+            errmessage = '{} is not a number.'.format(userinp)
 
-    # If we haven't gotten a number yet, add the eorror message and ask again
-    userinp = input('{}\n{}'.format(errmessage, prompt))
+        # If we haven't gotten a number yet, add the eorror message and ask again
+        userinp = input('{}\n{}'.format(errmessage, prompt))
+
 
 # getNumberBetween('Enter number between 1 and 10: ', 1, 10)
 
@@ -72,28 +74,100 @@ def getNumberBetween(prompt, min, max):
 #    { "type": "bankrupt", "text": "Bankrupt", "prize": false },
 #    { "type": "loseturn", "text": "Lose a turn", "prize": false }
 # prizes
-wheel_json = [
-  {'type': 'cash', 
-  'text': '$950', 
-  'value': 950, 
-  'prize': 'A trip to Ann Arbor!'}, 
-  {'type': 'bankrupt', 'text': 'Bankrupt', 'prize': False}, {'type': 'loseturn', 'text': 'Lose a turn', 'prize': False}, {'type': 'cash', 'text': '$2500', 'value': 2500, 'prize': False}, {'type': 'cash', 'text': '$900', 'value': 900, 'prize': False}, {'type': 'cash', 'text': '$700', 'value': 700, 'prize': False}, {'type': 'cash', 'text': '$600', 'value': 600, 'prize': False}, {'type': 'cash', 'text': '$800', 'value': 800, 'prize': False}, {'type': 'cash', 'text': 'One Million', 'value': 1000000, 'prize': False}, {'type': 'cash', 'text': '$650', 'value': 650, 'prize': 'A brand new car!'}, {'type': 'cash', 'text': '900', 'value': 900, 'prize': False}, {'type': 'cash', 'text': '$700', 'value': 700, 'prize': False}, {'type': 'cash', 'text': '$600', 'value': 600, 'prize': False}]
+wheel_json = [{
+    'type': 'cash',
+    'text': '$950',
+    'value': 950,
+    'prize': 'A trip to Ann Arbor!'
+}, {
+    'type': 'bankrupt',
+    'text': 'Bankrupt',
+    'prize': False
+}, {
+    'type': 'loseturn',
+    'text': 'Lose a turn',
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': '$2500',
+    'value': 2500,
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': '$900',
+    'value': 900,
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': '$700',
+    'value': 700,
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': '$600',
+    'value': 600,
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': '$800',
+    'value': 800,
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': 'One Million',
+    'value': 1000000,
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': '$650',
+    'value': 650,
+    'prize': 'A brand new car!'
+}, {
+    'type': 'cash',
+    'text': '900',
+    'value': 900,
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': '$700',
+    'value': 700,
+    'prize': False
+}, {
+    'type': 'cash',
+    'text': '$600',
+    'value': 600,
+    'prize': False
+}]
+
 
 def spinWheel():
-  with open(wheel_json, 'r') as f:
-    wheel = json.loads(f.read())
-    return random.choice(wheel)
+    with open(wheel_json, 'r') as f:
+        wheel = json.loads(f.read())
+        return random.choice(wheel)
+
 
 # Returns a category & phrase (as a tuple) to guess
 # Example:
 #     ("Artist & Song", "Whitney Houston's I Will Always Love You")
-def getRandomCategoryAndPhrase():
-  with open('phrases.json', 'r') as f:
-    phrases = json.loads(f.read())
 
-    category = random.choice(list(phrases.keys()))
-    phrase = random.choice(phrases[category])
-    return (category, phrase.upper)
+phrases_json = {
+    'Star & Role': [
+        'Adam Sandler As Happy Gilmore', 'Anthony Hopkins As Nixon',
+        'Bob Denver As Gilligan', 'Candice Bergen As Murphy Brown',
+        'Don Johnson As Nash Bridges', 'Eddie Murphy As The Nutty Professor',
+        'Elizabeth Taylor & Richard Burton In Cleopatra'
+    ]
+}
+
+
+def getRandomCategoryAndPhrase():
+    with open("phrases.json", "r") as f:
+        phrases = json.loads(f.read())
+
+        category = random.choice(list(phrases.keys()))
+        phrase = random.choice(phrases[category])
+        return (category, phrase.upper())
+
 
 # Given a phrase and a list of guessed letters, returns an obscured version
 # Example:
@@ -101,40 +175,71 @@ def getRandomCategoryAndPhrase():
 #     phrase:  "GLACIER NATIONAL PARK"
 #     returns> "_L___ER N____N_L P_RK"
 
-def obscurePhrase(phrase, guessed): 
-  rv = '' 
-  for s in phrase:
-    if (s in LETTERS) and (s not in guessed):
-      rv = rv + '_'
-    else:
-      rv = rv+s 
-  return rv 
+
+def obscurePhrase(phrase, guessed):
+    rv = ''
+    for s in phrase:
+        if (s in LETTERS) and (s not in guessed):
+            rv = rv + '_'
+        else:
+            rv = rv + s
+    return rv
+
 
 # Returns a string representing the current state of the game
 def showBoard(category, obscuredPhrase, guessed):
-  return """
+    return """
   Category: {}
   Phrase:   {}
   Guessed:  {}
   """.format(category, obscuredPhrase, ', '.join(sorted(guessed)))
 
+
 category, phrase = getRandomCategoryAndPhrase()
 guessed = []
 for x in range(random.randint(10, 20)):
-  randomLetter = random.choice(LETTERS)
-  if randomLetter not in guessed:
-    guessed.append(randomLetter)
+    randomLetter = random.choice(LETTERS)
+    if randomLetter not in guessed:
+        guessed.append(randomLetter)
 
-# Game logic code
-print('=' * 15)
-print('WHEEL OF PYTHON')
-print('=' * 15)
+print("geRandomCategoryAndPhrase()\n -> ('{}', '{}')".format(category, phrase))
 
-num_human = getNumberBetween('How many human players? ', 0, 10)
+# -------------------------
+print("\n{}\n".format("-" * 5))
+# -------------------------
 
-# Create the human player instances
+print("obscurePhrase('{}', [{}])\n -> {}".format(
+  phrase,  
+  
+  # loops through all the guessed letters and seperates them with a , 
+  ','.join(["'{}'".format(c) for c in guessed]) , 
+  
+  obscurePhrase(phrase, guessed)
+)
+)
+# -------------------------
+print("\n{}\n".format("-"*5))
+# -------------------------
+obscured_phrase = obscurePhrase(phrase, guessed)
 
-# toDo *************
-# human_players = [ WOFHumanPlayer(input('Enter the name for human player #{}'.format(i+1))) for i in range(num_human) ]
+print(
+      "showBoard( '{}', '{}', [{}]\n -> {} )".format(
+          phrase, 
+          obscured_phrase, 
+          ', '.join( [ "'{}'".format(c) for c in guessed]), 
+          showBoard(phrase, obscured_phrase, guessed)
+      )
+)
 
-# ******** ToDo: NOTE TASK IT TO WRITE THE CLASS WOFHumanPlayer
+# -------------------------
+print("\n{}\n".format("-"*5))
+# -------------------------
+num_times_to_spin = random.randint(2, 5)
+print('Spinning the wheel {} times (normally this owuld just be done once per turn)'.format(num_times_to_spin))
+
+for x in range(num_times_to_spin):
+  print("\n{}\n".format("-"*2))
+  print("spinWheel()")
+  print(spinWheel())
+
+  
