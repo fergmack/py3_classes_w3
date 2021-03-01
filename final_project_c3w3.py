@@ -1,3 +1,17 @@
+# We’re going to define a few useful methods for you:
+
+# getNumberBetween(prompt, min, max)) repeatedly asks the user for a number between min and max with the prompt prompt
+
+# spinWheel() simulates spinning the wheel and returns a dictionary with a random prize
+
+# getRandomCategoryAndPhrase() returns a tuple with a random category and phrase for players to guess
+
+# obscurePhrase(phrase, guessed) returns a tuple with a random category and phrase for players to guess
+
+# Take some time to read their implementations below.
+
+
+
 # ------------ Part 1
 import time
 
@@ -74,74 +88,10 @@ def getNumberBetween(prompt, min, max):
 #    { "type": "bankrupt", "text": "Bankrupt", "prize": false },
 #    { "type": "loseturn", "text": "Lose a turn", "prize": false }
 # prizes
-wheel_json = [{
-    'type': 'cash',
-    'text': '$950',
-    'value': 950,
-    'prize': 'A trip to Ann Arbor!'
-}, {
-    'type': 'bankrupt',
-    'text': 'Bankrupt',
-    'prize': False
-}, {
-    'type': 'loseturn',
-    'text': 'Lose a turn',
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': '$2500',
-    'value': 2500,
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': '$900',
-    'value': 900,
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': '$700',
-    'value': 700,
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': '$600',
-    'value': 600,
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': '$800',
-    'value': 800,
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': 'One Million',
-    'value': 1000000,
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': '$650',
-    'value': 650,
-    'prize': 'A brand new car!'
-}, {
-    'type': 'cash',
-    'text': '900',
-    'value': 900,
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': '$700',
-    'value': 700,
-    'prize': False
-}, {
-    'type': 'cash',
-    'text': '$600',
-    'value': 600,
-    'prize': False
-}]
 
 
 def spinWheel():
-    with open(wheel_json, 'r') as f:
+    with open('wheel.json', 'r') as f:
         wheel = json.loads(f.read())
         return random.choice(wheel)
 
@@ -235,7 +185,7 @@ print(
 print("\n{}\n".format("-"*5))
 # -------------------------
 num_times_to_spin = random.randint(2, 5)
-print('Spinning the wheel {} times (normally this owuld just be done once per turn)'.format(num_times_to_spin))
+print('Spinning the wheel {} times (normally this would just be done once per turn)'.format(num_times_to_spin))
 
 for x in range(num_times_to_spin):
   print("\n{}\n".format("-"*2))
@@ -243,3 +193,96 @@ for x in range(num_times_to_spin):
   print(spinWheel())
 
   
+print("\n{}\n".format("-"*5))
+
+print("In 2 seconds, it will run getNumbersBetween ('Testing getNumberBetween(). Enter a number between 1 and 10', 1, 10) ")
+
+# ----- UNCOMMENT BELOW 
+# time.sleep(2)
+# print(getNumberBetween('Testing getNumberBetween(). Enter a number between 1 and 10: ', 1, 10))
+
+# Task =================================================
+print("="*25)
+# Part A: WOFPlayer
+
+# We’re going to start by defining a class to represent a Wheel of Fortune player, called WOFPlayer. 
+
+VOWEL_COST = 250
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+VOWELS = 'AEIOU'
+
+class WORPlayer():
+
+  def __init__(self, name):   
+    self.name = name  
+    self.prizeMoney = 0
+    self.prizes = []
+
+  # methods
+  def addMoney(self, amt):
+    self.prizeMoney += amt 
+
+  def goBankrupt(self):
+    self.prizeMoney = 0 
+
+  def addPrize(self, prize):
+    self.prizes.append(prize)
+
+  def __str__(self):
+    return "{} ({}) ".format(self.name, self.prizeMoney)
+
+# a quick test to see if the Class works 
+# x = WORPlayer(name='john')
+# print(x)
+
+# Part B: WOFHumanPlayer
+# Next, we’re going to define a class named WOFHumanPlayer, which should inherit from WOFPlayer (part A). This class is going to represent a human player. In addition to having all of the instance variables and methods that WOFPlayer has, WOFHumanPlayer should have an additional method:
+# .getMove(category, obscuredPhrase, guessed)
+
+class WOFHumanPlayer(WORPlayer):
+  def getMove(self, category, obscuredPhrase, guessed):
+    prompt =  input(
+      """{name} has ${prizeMoney}
+
+      Category: {category}
+      Phrase: {obscured_phrase}
+      Guessed: {guessed}
+
+      Guess a letter, phrase, or type 'exit' or pass:
+
+    )""".format(self.name, self.prizeMoney, category, obscuredPhrase, guessed))
+    return prompt
+
+# Finally, we’re going to define a class named WOFComputerPlayer, which should inherit from WOFPlayer (part A). This class is going to represent a computer player.
+
+class WOFComputerPlayer(WOFPlayer):
+  # a list of English characters sorted from least frequent 
+  SORTED_FREQUENCIES = 'ZQXJKVBPYGFWMUCLDRHSNIOATE'
+
+  def __init__(self, name, difficulty):
+    self.name = name 
+    self.difficulty = difficulty 
+    self.prizemoney = 0
+    self.prizes = []
+
+  # methods 
+  def smartCoinFlip(self):
+    if random.randit(1, 10) > self.difficulty 
+      return True 
+    else:
+      return False
+
+  def getPossibleLetters(guessed): 
+   
+    # return list
+        LEFT OFF 
+
+# def getPossibleLetters(self, guessed=[]):
+# lst = []
+# for i in LETTERS:
+# if self.prizeMoney < VOWEL_COST:
+#     if i not in guessed and i not in VOWELS:
+#         lst.append(i)
+# else:
+#     if i not in guessed:
+#         lst.append(i)
