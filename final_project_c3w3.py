@@ -211,7 +211,8 @@ VOWEL_COST = 250
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 VOWELS = 'AEIOU'
 
-class WORPlayer():
+# Write the WOFPlayer class definition (part A) here
+class WOFPlayer():
 
   def __init__(self, name):   
     self.name = name  
@@ -229,17 +230,18 @@ class WORPlayer():
     self.prizes.append(prize)
 
   def __str__(self):
-    return "{} ({}) ".format(self.name, self.prizeMoney)
+    return "{} (${})".format(self.name, self.prizeMoney)
 
 # a quick test to see if the Class works 
-# x = WORPlayer(name='john')
+# x = WOFPlayer(name='john')
 # print(x)
 
 # Part B: WOFHumanPlayer
 # Next, we’re going to define a class named WOFHumanPlayer, which should inherit from WOFPlayer (part A). This class is going to represent a human player. In addition to having all of the instance variables and methods that WOFPlayer has, WOFHumanPlayer should have an additional method:
 # .getMove(category, obscuredPhrase, guessed)
 
-class WOFHumanPlayer(WORPlayer):
+# Write the WOFHumanPlayer class definition (part B) here
+class WOFHumanPlayer(WOFPlayer):
   def getMove(self, category, obscuredPhrase, guessed):
     prompt =  input(
       """{name} has ${prizeMoney}
@@ -262,20 +264,43 @@ class WOFComputerPlayer(WOFPlayer):
   def __init__(self, name, difficulty):
     self.name = name 
     self.difficulty = difficulty 
-    self.prizemoney = 0
+    self.prizeMoney = 0
     self.prizes = []
 
   # methods 
   def smartCoinFlip(self):
-    if random.randit(1, 10) > self.difficulty 
+    if random.randint(1, 10) > self.difficulty: 
       return True 
     else:
       return False
 
-  def getPossibleLetters(guessed): 
-   
-    # return list
-        LEFT OFF 
+  def getPossibleLetters(self, guessed): 
+    can_be_guessed = []
+    if self.prizeMoney >= 250:
+      for l in LETTERS:
+        can_be_guessed.append(l)
+    else:
+      for l in LETTERS:
+        if l not in VOWELS:
+          can_be_guessed.append(l)
+    return can_be_guessed
+
+  def getMove(self, category, obscuredPhrase, guessed):
+        list = self.getPossibleLetters(guessed)
+        FlipResult = self.smartCoinFlip()
+        if len(list) == 0:
+            return 'pass'
+        else:
+            if FlipResult==True:
+                for l in self.SORTED_FREQUENCIES:
+                    if l in list:
+                        return l
+            elif FlipResult==False:
+                return random.choice(list)
+
+    
+    
+
 
 # def getPossibleLetters(self, guessed=[]):
 # lst = []
