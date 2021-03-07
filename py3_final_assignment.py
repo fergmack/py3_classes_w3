@@ -4,7 +4,7 @@
 # TODO - add the name of the country to the list with 'did not get gold' .eg. add chile to the list 
 
 gold = {"US":46, "Fiji":1, "Great Britain":27, "Cuba":5, "Thailand":2, "China":26, "France":10}
-country = ["Fiji", "Chile", "Mexico", "France", "Norway", "US"]
+country = ["Fiji", "Chile", "Mexico", "France", "Norway", "US"] 
 country_gold = []
 
 for x in country:
