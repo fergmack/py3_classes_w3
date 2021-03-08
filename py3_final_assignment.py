@@ -1,126 +1,316 @@
+VOWEL_COST = 250
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+VOWELS = 'AEIOU'
 
-# 1) The code below takes the list of country, country, and searches to see if it is in the dictionary gold which shows some countries who won gold during the Olympics. However, this code currently does not work. Correctly add try/except clause in the code so that it will correctly populate the list, country_gold, with either the number of golds won or the string “Did not get gold”.
+import random 
 
-# TODO - add the name of the country to the list with 'did not get gold' .eg. add chile to the list 
+# Write the WOFPlayer class definition (part A) here
+class WOFPlayer():
 
-gold = {"US":46, "Fiji":1, "Great Britain":27, "Cuba":5, "Thailand":2, "China":26, "France":10}
-country = ["Fiji", "Chile", "Mexico", "France", "Norway", "US"] 
-country_gold = []
+  def __init__(self, name):   
+    self.name = name  
+    self.prizeMoney = 0
+    self.prizes = []
 
-for x in country:
-  try:
-    country_gold.append(gold[x])
-  except:
-    country_gold.append("Did not get gold")
+  # methods
+  def addMoney(self, amt):
+    self.prizeMoney += amt 
 
-# print(country_gold)
+  def goBankrupt(self):
+    self.prizeMoney = 0 
 
-# 2) Provided is a buggy for loop that tries to accumulate some values out of some dictionaries. Insert a try/except so that the code passes.
+  def addPrize(self, prize):
+    self.prizes.append(prize)
 
-di = [
-  {"Puppies": 17, 'Kittens': 9, "Birds": 23, 'Fish': 90, "Hamsters": 49},
- {"Puppies": 23, "Birds": 29, "Fish": 20, "Mice": 20, "Snakes": 7}, 
- {"Fish": 203, "Hamsters": 93, "Snakes": 25, "Kittens": 89}, 
- {"Birds": 20, "Puppies": 90, "Snakes": 21, "Fish": 10, "Kittens": 67}]
-total = 0
+  def __str__(self):
+    return "{} (${})".format(self.name, self.prizeMoney)
 
-# the problem is that 'Puppies' is not in the 3rd dictionary
-# uncomment below to see error
+# a quick test to see if the Class works 
+# x = WOFPlayer(name='john')
+# print(x)
 
-# for diction in di:
-    # total = total + diction['Puppies']
-    # print(diction['Puppies'])
+# Part B: WOFHumanPlayer
+# Next, we’re going to define a class named WOFHumanPlayer, which should inherit from WOFPlayer (part A). This class is going to represent a human player. In addition to having all of the instance variables and methods that WOFPlayer has, WOFHumanPlayer should have an additional method:
+# .getMove(category, obscuredPhrase, guessed)
 
-# print("Total number of puppies:", total) 
-for diction in di:
-  try:
-    total = total + diction['Puppies']
-  except KeyError:
-    continue
+# Write the WOFHumanPlayer class definition (part B) here
+class WOFHumanPlayer(WOFPlayer):
+  def getMove(self, category, obscuredPhrase, guessed):
+    prompt =  input(
+      """{} has ${}
+
+      Category: {}
+      Phrase: {}
+      Guessed: {}
+
+      Guess a letter, phrase, or type 'exit' or pass:
+
+    )""".format(self.name, self.prizeMoney, category, obscuredPhrase, guessed))
+    return prompt
+
+# Finally, we’re going to define a class named WOFComputerPlayer, which should inherit from WOFPlayer (part A). This class is going to represent a computer player.
+class WOFComputerPlayer(WOFPlayer):
+
+    SORTED_FREQUENCIES = "ZQXJKVBPYGFWMUCLDRHSNIOATE"
+
+    def __init__(self, name, difficulty):
+        WOFPlayer.__init__(self,name)
+        self.difficulty = difficulty
+        self.name = name
+
+    def smartCoinFlip(self):
+        rand_number = random.randint(1,10)
+        if rand_number > self.difficulty:
+            return True
+        elif rand_number <= self.difficulty:
+            return False
+
+    def getPossibleLetters(self, guessed):
+        lst_let = []
+        if self.prizeMoney >= VOWEL_COST:
+            for letter in LETTERS:
+                if letter not in guessed:
+                    lst_let.append(letter)
+                else:
+                    continue
+        elif self.prizeMoney < VOWEL_COST:
+            for letter in LETTERS:
+                if letter not in guessed and letter not in VOWELS:
+                    lst_let.append(letter)
+                else:
+                    continue
+        return lst_let
+
+    def getMove(self, category, obscuredPhrase, guessed):
+        letters_available = self.getPossibleLetters(guessed)
+        #reverse SORTED_FREQUENCIES in order to iterate through, [0] to end
+        rev_SORT_FREQ = self.SORTED_FREQUENCIES[::-1]
+
+        if letters_available == []:
+            return "pass"
+        elif self.smartCoinFlip():
+            for letter in rev_SORT_FREQ:
+                if letter in letters_available:
+                    return letter
+                else:
+                    continue
+            return "pass"
+        else:
+            whatsleft = random.choice(letters_available)
+            return whatsleft
+                
+
+# import sys
+# sys.setExecutionLimit(600000) # let this take up to 10 minutes
+
+import json
+import random
+import time
+
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+VOWELS  = 'AEIOU'
+VOWEL_COST  = 250
+
+# Repeatedly asks the user for a number between min & max (inclusive)
+def getNumberBetween(prompt, min, max):
+    userinp = input(prompt) # ask the first time
+
+    while True:
+        try:
+            n = int(userinp) # try casting to an integer
+            if n < min:
+                errmessage = 'Must be at least {}'.format(min)
+            elif n > max:
+                errmessage = 'Must be at most {}'.format(max)
+            else:
+                return n
+        except ValueError: # The user didn't enter a number
+            errmessage = '{} is not a number.'.format(userinp)
+
+        # If we haven't gotten a number yet, add the error message
+        # and ask again
+        userinp = input('{}\n{}'.format(errmessage, prompt))
+
+# Spins the wheel of fortune wheel to give a random prize
+# Examples:
+#    { "type": "cash", "text": "$950", "value": 950, "prize": "A trip to Ann Arbor!" },
+#    { "type": "bankrupt", "text": "Bankrupt", "prize": false },
+#    { "type": "loseturn", "text": "Lose a turn", "prize": false }
+def spinWheel():
+    with open("wheel.json", 'r') as f:
+        wheel = json.loads(f.read())
+        return random.choice(wheel)
+
+# Returns a category & phrase (as a tuple) to guess
+# Example:
+#     ("Artist & Song", "Whitney Houston's I Will Always Love You")
+def getRandomCategoryAndPhrase():
+    with open("phrases.json", 'r') as f:
+        phrases = json.loads(f.read())
+
+        category = random.choice(list(phrases.keys()))
+        phrase   = random.choice(phrases[category])
+        return (category, phrase.upper())
+
+# Given a phrase and a list of guessed letters, returns an obscured version
+# Example:
+#     guessed: ['L', 'B', 'E', 'R', 'N', 'P', 'K', 'X', 'Z']
+#     phrase:  "GLACIER NATIONAL PARK"
+#     returns> "_L___ER N____N_L P_RK"
+def obscurePhrase(phrase, guessed):
+    rv = ''
+    for s in phrase:
+        if (s in LETTERS) and (s not in guessed):
+            rv = rv+'_'
+        else:
+            rv = rv+s
+    return rv
+
+# Returns a string representing the current state of the game
+def showBoard(category, obscuredPhrase, guessed):
+    return """
+Category: {}
+Phrase:   {}
+Guessed:  {}""".format(category, obscuredPhrase, ', '.join(sorted(guessed)))
+
+# GAME LOGIC CODE
+print('='*15)
+print('WHEEL OF PYTHON')
+print('='*15)
+print('')
+
+num_human = getNumberBetween('How many human players?', 0, 10)
+
+# Create the human player instances
+human_players = [WOFHumanPlayer(input('Enter the name for human player #{}'.format(i+1))) for i in range(num_human)]
+
+num_computer = getNumberBetween('How many computer players?', 0, 10)
+
+# If there are computer players, ask how difficult they should be
+if num_computer >= 1:
+    difficulty = getNumberBetween('What difficulty for the computers? (1-10)', 1, 10)
+
+# Create the computer player instances
+computer_players = [WOFComputerPlayer('Computer {}'.format(i+1), difficulty) for i in range(num_computer)]
+
+players = human_players + computer_players
+
+# No players, no game :(
+if len(players) == 0:
+    print('We need players to play!')
+    raise Exception('Not enough players')
+
+# category and phrase are strings.
+category, phrase = getRandomCategoryAndPhrase()
+# guessed is a list of the letters that have been guessed
+guessed = []
+
+# playerIndex keeps track of the index (0 to len(players)-1) of the player whose turn it is
+playerIndex = 0
+
+# will be set to the player instance when/if someone wins
+winner = False
+
+def requestPlayerMove(player, category, guessed):
+    while True: # we're going to keep asking the player for a move until they give a valid one
+        time.sleep(0.1) # added so that any feedback is printed out before the next prompt
+
+        move = player.getMove(category, obscurePhrase(phrase, guessed), guessed)
+        move = move.upper() # convert whatever the player entered to UPPERCASE
+        if move == 'EXIT' or move == 'PASS':
+            return move
+        elif len(move) == 1: # they guessed a character
+            if move not in LETTERS: # the user entered an invalid letter (such as @, #, or $)
+                print('Guesses should be letters. Try again.')
+                continue
+            elif move in guessed: # this letter has already been guessed
+                print('{} has already been guessed. Try again.'.format(move))
+                continue
+            elif move in VOWELS and player.prizeMoney < VOWEL_COST: # if it's a vowel, we need to be sure the player has enough
+                    print('Need ${} to guess a vowel. Try again.'.format(VOWEL_COST))
+                    continue
+            else:
+                return move
+        else: # they guessed the phrase
+            return move
 
 
-print("Total number of puppies:", total)
+while True:
+    player = players[playerIndex]
+    wheelPrize = spinWheel()
 
-# 3) The list, numb, contains integers. Write code that populates the list remainder with the remainder of 36 divided by each number in numb. For example, the first element should be 0, because 36/6 has no remainder. If there is an error, have the string “Error” appear in the remainder.
-numb = [6, 0, 36, 8, 2, 36, 0, 12, 60, 0, 45, 0, 3, 23]
-remainder = []
+    print('')
+    print('-'*15)
+    print(showBoard(category, obscurePhrase(phrase, guessed), guessed))
+    print('')
+    print('{} spins...'.format(player.name))
+    time.sleep(2) # pause for dramatic effect!
+    print('{}!'.format(wheelPrize['text']))
+    time.sleep(1) # pause again for more dramatic effect!
 
-for n in numb:
-  try:
-    remainder.append(36 % n )
-  except ZeroDivisionError:
-    remainder.append('Error')
+    if wheelPrize['type'] == 'bankrupt':
+        player.goBankrupt()
+    elif wheelPrize['type'] == 'loseturn':
+        pass # do nothing; just move on to the next player
+    elif wheelPrize['type'] == 'cash':
+        move = requestPlayerMove(player, category, guessed)
+        if move == 'EXIT': # leave the game
+            print('Until next time!')
+            break
+        elif move == 'PASS': # will just move on to next player
+            print('{} passes'.format(player.name))
+        elif len(move) == 1: # they guessed a letter
+            guessed.append(move)
 
-print(remainder)
+            print('{} guesses "{}"'.format(player.name, move))
 
-# 4) Provided is buggy code, insert a try/except so that the code passes.
-# *******************
+            if move in VOWELS:
+                player.prizeMoney -= VOWEL_COST
 
-lst = [2,4,10,42,12,0,4,7,21,4,83,8,5,6,8,234,5,6,523,42,34,0,234,1,435,465,56,7,3,43,23]
+            count = phrase.count(move) # returns an integer with how many times this letter appears
+            if count > 0:
+                if count == 1:
+                    print("There is one {}".format(move))
+                else:
+                    print("There are {} {}'s".format(count, move))
 
-lst_three = []
+                # Give them the money and the prizes
+                player.addMoney(count * wheelPrize['value'])
+                if wheelPrize['prize']:
+                    player.addPrize(wheelPrize['prize'])
 
-for num in lst:
-  try:
-    if 3 % num == 0:
-      lst_three.append(num)
-  except ZeroDivisionError:
-      # lst_three.append('Cannot divide by zero')
-      continue
+                # all of the letters have been guessed
+                if obscurePhrase(phrase, guessed) == phrase:
+                    winner = player
+                    break
 
+                continue # this player gets to go again
 
-print(lst_three)
+            elif count == 0:
+                print("There is no {}".format(move))
+        else: # they guessed the whole phrase
+            if move == phrase: # they guessed the full phrase correctly
+                winner = player
 
-# Write code so that the buggy code provided works using a try/except. When the codes does not work in the try, have it append to the list attempt the string “Error”.
+                # Give them the money and the prizes
+                player.addMoney(wheelPrize['value'])
+                if wheelPrize['prize']:
+                    player.addPrize(wheelPrize['prize'])
 
-full_lst = ["ab", 'cde', 'fgh', 'i', 'jkml', 'nop', 'qr', 's', 'tv', 'wxy', 'z']
+                break
+            else:
+                print('{} was not the phrase'.format(move))
 
-attempt = []
+    # Move on to the next player (or go back to player[0] if we reached the end)
+    playerIndex = (playerIndex + 1) % len(players)
 
-for elem in full_lst:
-  try:
-    attempt.append(elem[1])
-  except:
-    attempt.append('Error')
-
-print(attempt)
-
-# The following code tries to append the third element of each list in conts to the new list third_countries. Currently, the code does not work. Add a try/except clause so the code runs without errors, and the string ‘Continent does not have 3 countries’ is appended to countries instead of producing an error.
-
-conts = [['Spain', 'France', 'Greece', 'Portugal', 'Romania', 'Germany'], ['USA', 'Mexico', 'Canada'], ['Japan', 'China', 'Korea', 'Vietnam', 'Cambodia'], ['Argentina', 'Chile', 'Brazil', 'Ecuador', 'Uruguay', 'Venezuela'], ['Australia'], ['Zimbabwe', 'Morocco', 'Kenya', 'Ethiopa', 'South Africa'], ['Antarctica']]
-
-third_countries = []
-
-for c in conts:
-  try:
-    third_countries.append(c[2])
-  except:
-    third_countries.append('Continent does not have 3 countries')
-
-# The buggy code below prints out the value of the sport in the list sport. Use try/except so that the code will run properly. If the sport is not in the dictionary, ppl_play, add it in with the value of 1.
-
-sport = ["hockey", "basketball", "soccer", "tennis", "football", "baseball"]
-
-ppl_play = {"hockey":4, "soccer": 10, "football": 15, "tennis": 8}
-
-for x in sport:
-  try:
-    print(ppl_play[x])
-  except:
-    ppl_play[x] =+ 1
-
-print(ppl_play)
-
-# Provided is a buggy for loop that tries to accumulate some values out of some dictionaries. Insert a try/except so that the code passes. If the key is not there,initialize it in the dictionary and set the value to zero.
-
-di = [{"Puppies": 17, 'Kittens': 9, "Birds": 23, 'Fish': 90, "Hamsters": 49}, {"Puppies": 23, "Birds": 29, "Fish": 20, "Mice": 20, "Snakes": 7}, {"Fish": 203, "Hamsters": 93, "Snakes": 25, "Kittens": 89}, {"Birds": 20, "Puppies": 90, "Snakes": 21, "Fish": 10, "Kittens": 67}]
-total = 0
-
-# some dictionaries don't have "Puppies"
-for diction in di:
-  try:
-    total = total + diction["Puppies"]
-  except:
-    diction["Puppies"] = 1
-    
-print("Total number of puppies:", total)
+if winner:
+    # In your head, you should hear this as being announced by a game show host
+    print('{} wins! The phrase was {}'.format(winner.name, phrase))
+    print('{} won ${}'.format(winner.name, winner.prizeMoney))
+    if len(winner.prizes) > 0:
+        print('{} also won:'.format(winner.name))
+        for prize in winner.prizes:
+            print('    - {}'.format(prize))
+else:
+    print('Nobody won. The phrase was {}'.format(phrase))
