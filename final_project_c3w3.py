@@ -1,4 +1,5 @@
 # Finally a working version
+
 VOWEL_COST = 250
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 VOWELS = 'AEIOU'
